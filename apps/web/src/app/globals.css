@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-canvas: #090514;
+  --bg-surface-1: #130c25;
+  --bg-surface-2: #1a1230;
+  --bg-surface-3: #241b40;
+  --bg-elevated: #2a1f4d;
+  --bg-input: #0d0820;
+
+  --border-subtle: #2a1b4e;
+  --border-default: #3b2a6b;
+  --border-strong: #553f8b;
+
+  --brand-primary: #8b5cf6;
+  --brand-primary-hover: #a78bfa;
+  --brand-primary-active: #7c3aed;
+  --brand-secondary: #6366f1;
+  --brand-tertiary: #06b6d4;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --text-disabled: #475569;
+  --text-inverse: #090514;
+
+  --status-success: #34d399;
+  --status-success-bg: #064e3b;
+  --status-warning: #fbbf24;
+  --status-warning-bg: #451a03;
+  --status-danger: #ef4444;
+  --status-danger-bg: #450a0a;
+  --status-info: #60a5fa;
+  --status-info-bg: #1e3a8a;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-primary);
+}
