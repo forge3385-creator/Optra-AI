@@ -10,6 +10,8 @@ const config: Config = {
     extend: {
       colors: {
         canvas: '#090514',
+        input: '#0d0820',
+        'bg-input': '#0d0820',
         surface: {
           1: '#130c25',
           2: '#1a1230',
