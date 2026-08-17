@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import {
   Workflow, Play, CheckCircle2, Save, ArrowLeft, Plus, Trash2,
-  Sparkles, ShieldCheck, Siren, FileText, Zap, HelpCircle, Layers, Settings, Check
+  Sparkles, ShieldCheck, Siren, FileText, Zap, HelpCircle, Layers, Settings, Check, Lock
 } from 'lucide-react';
 
 export default function WorkflowBuilderPage({ params }: { params: { id: string } }) {
@@ -14,7 +14,7 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
     { id: 'n2', kind: 'ai_prompt', label: 'AI Compliance Validation', desc: 'Validates Tax ID & attachments' },
     { id: 'n3', kind: 'approval', label: 'Manager Approval Gate', desc: 'Chain: Report-to manager (SLA 24h)' },
     { id: 'n4', kind: 'approval', label: 'Finance Director Signoff', desc: 'Policy: Amount >= $5,000' },
-    { id: 'n5', kind: 'erp_call', label: 'SAP S/4HANA PO Generation', desc: 'POST /API_PURCHASEORDER_SRV' },
+    { id: 'n5', kind: 'task', label: 'SAP PO Entry Dispatch', desc: 'Task assigned to Finance Team' },
     { id: 'n6', kind: 'notification', label: 'Multi-Channel Notification', desc: 'Channels: Slack, Email' },
     { id: 'n7', kind: 'end', label: 'Process Completion', desc: 'Terminal state' }
   ]);
@@ -22,15 +22,22 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
   const [validationResult, setValidationResult] = React.useState<string | null>(null);
   const [simulationRunning, setSimulationRunning] = React.useState(false);
 
+  // MVP Node Palette (8 Node Kinds + Phase 2 Stubs)
   const nodePalette = [
-    { kind: 'task', label: 'Task Node', icon: 'ListChecks' },
-    { kind: 'approval', label: 'Approval Node', icon: 'ShieldCheck' },
-    { kind: 'branch', label: 'Branch Node', icon: 'GitBranch' },
-    { kind: 'parallel', label: 'Parallel Gate', icon: 'Columns' },
-    { kind: 'ai_prompt', label: 'AI Prompt Node', icon: 'Sparkles' },
-    { kind: 'erp_call', label: 'ERP Call Node', icon: 'Server' },
-    { kind: 'notification', label: 'Notification', icon: 'Bell' },
-    { kind: 'delay', label: 'Delay Timer', icon: 'Clock' }
+    { kind: 'start', label: 'Start Node', mvp: true },
+    { kind: 'end', label: 'End Node', mvp: true },
+    { kind: 'task', label: 'Task Node', mvp: true },
+    { kind: 'approval', label: 'Approval Node', mvp: true },
+    { kind: 'branch', label: 'Branch Node', mvp: true },
+    { kind: 'parallel', label: 'Parallel Gate', mvp: true },
+    { kind: 'ai_prompt', label: 'AI Prompt Node', mvp: true },
+    { kind: 'notification', label: 'Notification', mvp: true },
+    { kind: 'wait', label: 'Wait Event', mvp: false },
+    { kind: 'webhook', label: 'Webhook Out', mvp: false },
+    { kind: 'script', label: 'Script Executor', mvp: false },
+    { kind: 'subworkflow', label: 'Sub-workflow', mvp: false },
+    { kind: 'erp_call', label: 'ERP Call', mvp: false },
+    { kind: 'delay', label: 'Delay Timer', mvp: false }
   ];
 
   const handleAddNode = (kind: string, label: string) => {
@@ -64,7 +71,7 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
           </Link>
           <div>
             <h2 className="font-bold text-text-primary flex items-center gap-2">
-              Vendor Onboarding & ERP Trigger <span className="text-[10px] font-mono text-brand-tertiary">v3.0 (Draft)</span>
+              Vendor Onboarding & Risk Audit <span className="text-[10px] font-mono text-brand-tertiary">v3.0 (Draft)</span>
             </h2>
             <p className="text-[10px] text-text-muted">Last saved 2 minutes ago</p>
           </div>
@@ -102,16 +109,26 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
       <div className="flex-1 flex overflow-hidden">
         {/* Left Pane 1: Node Palette */}
         <div className="w-56 bg-surface-1 border-r border-border-subtle p-3 space-y-4 text-xs overflow-y-auto">
-          <p className="font-bold text-text-muted uppercase tracking-wider text-[10px]">Node Palette</p>
+          <p className="font-bold text-text-muted uppercase tracking-wider text-[10px]">Node Palette (8 MVP Kinds)</p>
           <div className="space-y-1.5">
             {nodePalette.map((p, idx) => (
               <button
                 key={idx}
-                onClick={() => handleAddNode(p.kind, p.label)}
-                className="w-full text-left p-2.5 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border-subtle hover:border-brand-primary text-text-secondary hover:text-text-primary font-medium flex items-center justify-between group transition-all"
+                disabled={!p.mvp}
+                onClick={() => p.mvp && handleAddNode(p.kind, p.label)}
+                title={!p.mvp ? 'Available in Phase 2' : undefined}
+                className={`w-full text-left p-2.5 rounded-lg border font-medium flex items-center justify-between transition-all ${
+                  p.mvp
+                    ? 'bg-surface-2 hover:bg-surface-3 border-border-subtle hover:border-brand-primary text-text-secondary hover:text-text-primary'
+                    : 'bg-surface-2/40 border-border-subtle/50 text-text-disabled cursor-not-allowed opacity-60'
+                }`}
               >
                 <span>{p.label}</span>
-                <Plus className="h-3.5 w-3.5 text-text-muted group-hover:text-brand-primary" />
+                {p.mvp ? (
+                  <Plus className="h-3.5 w-3.5 text-text-muted hover:text-brand-primary" />
+                ) : (
+                  <Lock className="h-3 w-3 text-text-disabled" />
+                )}
               </button>
             ))}
           </div>
@@ -119,10 +136,8 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
 
         {/* Center Pane 2: Visual Canvas Grid */}
         <div className="flex-1 bg-canvas p-8 overflow-auto relative flex justify-center items-start">
-          {/* Subtle Canvas Dot Grid Pattern */}
           <div className="absolute inset-0 bg-[radial-gradient(#2a1b4e_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none" />
 
-          {/* Node Diagram Chain Visualizer */}
           <div className="w-full max-w-lg space-y-6 relative z-10">
             {nodes.map((node, i) => {
               const isSelected = selectedNode === node.id;
@@ -137,7 +152,7 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
                     }`}
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-bg-input text-brand-primary border border-border-subtle font-bold">
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-input text-brand-primary border border-border-subtle font-bold">
                         {node.kind}
                       </span>
                       <span className="text-[10px] font-mono text-text-muted">{node.id}</span>
@@ -146,7 +161,6 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
                     <p className="text-xs text-text-muted mt-1">{node.desc}</p>
                   </div>
 
-                  {/* Connecting Arrow */}
                   {i < nodes.length - 1 && (
                     <div className="h-6 w-0.5 bg-brand-primary/40 my-1 relative">
                       <div className="absolute bottom-0 -left-[3px] border-l-4 border-r-4 border-t-6 border-l-transparent border-r-transparent border-t-brand-primary" />
@@ -189,7 +203,7 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
                   const val = e.target.value;
                   setNodes(nodes.map((n) => (n.id === currentNode.id ? { ...n, label: val } : n)));
                 }}
-                className="w-full px-3 py-2 bg-bg-input border border-border-default rounded-lg text-text-primary focus:outline-none focus:border-brand-primary"
+                className="w-full px-3 py-2 bg-input border border-border-default rounded-lg text-text-primary focus:outline-none focus:border-brand-primary"
               />
             </div>
 
@@ -199,7 +213,7 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
                 type="text"
                 disabled
                 value={currentNode.kind}
-                className="w-full px-3 py-2 bg-bg-input border border-border-subtle rounded-lg text-text-muted font-mono"
+                className="w-full px-3 py-2 bg-input border border-border-subtle rounded-lg text-text-muted font-mono"
               />
             </div>
 
@@ -208,14 +222,13 @@ export default function WorkflowBuilderPage({ params }: { params: { id: string }
               <input
                 type="number"
                 defaultValue={1440}
-                className="w-full px-3 py-2 bg-bg-input border border-border-default rounded-lg text-text-primary"
+                className="w-full px-3 py-2 bg-input border border-border-default rounded-lg text-text-primary"
               />
             </div>
 
-            {/* Live Node JSON Preview */}
             <div>
               <label className="block font-semibold text-text-secondary mb-1">Node JSON Definition</label>
-              <pre className="p-3 rounded-lg bg-bg-input border border-border-subtle font-mono text-[10px] text-brand-tertiary overflow-x-auto">
+              <pre className="p-3 rounded-lg bg-input border border-border-subtle font-mono text-[10px] text-brand-tertiary overflow-x-auto">
 {JSON.stringify(currentNode, null, 2)}
               </pre>
             </div>

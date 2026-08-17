@@ -4,9 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Workflow, ListChecks, Sparkles, ShieldCheck, Siren, KanbanSquare,
-  Activity, FileText, Users, Gauge, ShieldAlert, BarChart3, Bell, Zap,
-  ChevronLeft, ChevronRight, Settings, Shield, LayoutDashboard, HelpCircle
+  LayoutDashboard, Workflow, ListChecks, ShieldCheck, KanbanSquare,
+  FileText, Users, Siren, Activity, ShieldAlert, Gauge, Sparkles, Bell,
+  Shield, Settings, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -17,27 +17,29 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
 
-  const moduleItems = [
+  // Locked 15-item nav hierarchy matching v1.1 §7.13 / §10
+  const mainNavItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Workflows', href: '/workflows', icon: Workflow, badge: '14' },
-    { name: 'Tasks & Work', href: '/tasks', icon: ListChecks, badge: '30' },
-    { name: 'AI Assistant', href: '/ai-assistant', icon: Sparkles, highlight: true },
+    { name: 'Tasks', href: '/tasks', icon: ListChecks, badge: '30' },
     { name: 'Approvals', href: '/approvals', icon: ShieldCheck, badge: '3' },
-    { name: 'Incidents', href: '/incidents', icon: Siren, badge: '3' },
     { name: 'Projects', href: '/projects', icon: KanbanSquare },
-    { name: 'BPM Monitoring', href: '/bi/monitoring', icon: Activity },
-    { name: 'Documents & SOPs', href: '/documents', icon: FileText },
+    { name: 'Documents', href: '/documents', icon: FileText },
     { name: 'Meetings', href: '/meetings', icon: Users },
-    { name: 'KPI Dashboard', href: '/kpis', icon: Gauge },
-    { name: 'AI Risk Scanner', href: '/risks', icon: ShieldAlert, badge: '2' },
-    { name: 'Business Intelligence', href: '/bi', icon: BarChart3 },
-    { name: 'Notifications', href: '/notifications', icon: Bell },
-    { name: 'E2E Workflows', href: '/workflows/e2e', icon: Zap },
+    { name: 'Incidents', href: '/incidents', icon: Siren, badge: '3' },
+    { name: 'Monitor', href: '/monitor', icon: Activity },
+    { name: 'Risks', href: '/risks', icon: ShieldAlert, badge: '2' },
+    { name: 'KPI', href: '/kpis', icon: Gauge },
   ];
 
-  const adminItems = [
+  const footerNavItems = [
+    { name: 'AI Assistant', href: '/ai-assistant', icon: Sparkles, highlight: true, pinned: true },
+    { name: 'Notifications', href: '/notifications', icon: Bell },
+  ];
+
+  const adminNavItems = [
+    { name: 'Audit', href: '/admin/audit', icon: Shield },
     { name: 'Settings', href: '/settings', icon: Settings },
-    { name: 'Admin & RBAC', href: '/admin', icon: Shield },
   ];
 
   return (
@@ -46,17 +48,17 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         collapsed ? 'w-16' : 'w-64'
       }`}
     >
-      {/* Navigation List */}
-      <div className="py-4 px-2 space-y-6 overflow-y-auto flex-1">
-        {/* Modules Group */}
+      {/* Navigation Scroll Area */}
+      <div className="py-4 px-2 space-y-4 overflow-y-auto flex-1">
+        {/* Core Journey (1-11) */}
         <div>
           {!collapsed && (
             <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">
-              Operations Intelligence
+              Operations Platform
             </p>
           )}
           <nav className="space-y-1">
-            {moduleItems.map((item) => {
+            {mainNavItems.map((item) => {
               const Icon = item.icon;
               const active = pathname === item.href || pathname.startsWith(item.href + '/');
 
@@ -68,7 +70,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     active
                       ? 'bg-brand-primary/15 text-brand-primary border border-brand-primary/30 shadow-sm'
                       : 'text-text-secondary hover:bg-surface-2 hover:text-text-primary'
-                  } ${item.highlight ? 'text-brand-tertiary font-bold' : ''}`}
+                  }`}
                 >
                   <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-brand-primary' : 'text-text-muted'}`} />
                   {!collapsed && <span className="truncate">{item.name}</span>}
@@ -84,17 +86,47 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           </nav>
         </div>
 
-        {/* Admin Group */}
-        <div>
+        {/* Footer Group (12-13) */}
+        <div className="pt-3 border-t border-border-subtle">
+          {!collapsed && (
+            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">
+              Copilot & Feed
+            </p>
+          )}
+          <nav className="space-y-1">
+            {footerNavItems.map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href || pathname.startsWith(item.href + '/');
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all relative ${
+                    active
+                      ? 'bg-brand-primary/15 text-brand-primary border border-brand-primary/30 shadow-sm'
+                      : 'text-text-secondary hover:bg-surface-2 hover:text-text-primary'
+                  } ${item.highlight ? 'bg-brand-primary/10 text-brand-primary font-bold border border-brand-primary/20' : ''}`}
+                >
+                  <Icon className={`h-4 w-4 shrink-0 ${item.highlight ? 'text-brand-primary animate-pulse' : active ? 'text-brand-primary' : 'text-text-muted'}`} />
+                  {!collapsed && <span className="truncate">{item.name}</span>}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Admin Group (14-15) */}
+        <div className="pt-3 border-t border-border-subtle">
           {!collapsed && (
             <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">
               Administration
             </p>
           )}
           <nav className="space-y-1">
-            {adminItems.map((item) => {
+            {adminNavItems.map((item) => {
               const Icon = item.icon;
-              const active = pathname.startsWith(item.href);
+              const active = pathname === item.href || pathname.startsWith(item.href + '/');
 
               return (
                 <Link
