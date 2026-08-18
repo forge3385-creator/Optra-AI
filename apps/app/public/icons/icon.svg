@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#grad)" />
+  <!-- Sparkle / Diamond AI logo -->
+  <path d="M256 100 L280 220 L400 256 L280 292 L256 412 L232 292 L112 256 L232 220 Z" fill="#ffffff" />
+  <circle cx="360" cy="140" r="24" fill="#a5b4fc" />
+  <circle cx="150" cy="370" r="16" fill="#a5b4fc" />
+</svg>
