@@ -2,7 +2,7 @@
   "name": "operations-copilot",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+    "build": "turbo run build --filter=@copilot/app...",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "test": "turbo test",
