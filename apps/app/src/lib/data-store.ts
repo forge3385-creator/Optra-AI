@@ -1394,19 +1394,19 @@ class DataStore {
 
     // Cross-module risk signal
     if (newInc.severity === 'sev1' || newInc.severity === 'sev2') {
-      const riskItem = {
+      const riskItem: RiskSignalItem = {
         id: `risk-inc-${newInc.id}`,
         tenant_id: this.activeTenant.id,
         source: 'incident',
         entity_id: newInc.id,
         score: newInc.severity === 'sev1' ? 0.95 : 0.75,
-        severity: newInc.severity === 'sev1' ? ('critical' as const) : ('high' as const),
+        severity: newInc.severity === 'sev1' ? 'critical' : 'high',
         rationale: `Active ${newInc.severity.toUpperCase()} incident: "${newInc.title}" requires immediate mitigation.`,
         recommendations: [
           'Page lead engineer on-call',
           'Deploy hotfix and trigger failover'
         ],
-        status: 'active' as const,
+        status: 'active',
         detected_at: 'Just now'
       };
       this.risks.unshift(riskItem);
