@@ -8,7 +8,7 @@ import {
   FileText, Users, Siren, Activity, ShieldAlert, Gauge, Sparkles, Bell,
   Shield, Settings, ChevronLeft, ChevronRight, X, BarChart3, Link2
 } from 'lucide-react';
-import { dataStore } from '@/lib/data-store';
+import { dataStore } from '../lib/data-store';
 
 interface SidebarProps {
   collapsed: boolean;

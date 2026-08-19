@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Sidebar } from '@/components/sidebar';
-import { Header } from '@/components/header';
-import { CommandPalette } from '@/components/command-palette';
+import { Sidebar } from '../../components/sidebar';
+import { Header } from '../../components/header';
+import { CommandPalette } from '../../components/command-palette';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
