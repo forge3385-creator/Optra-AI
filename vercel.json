@@ -1,7 +1,6 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
-  "buildCommand": "pnpm --filter=@copilot/app build",
+  "buildCommand": "cd apps/app && npx next build",
   "outputDirectory": "apps/app/.next",
-  "installCommand": "pnpm install"
+  "installCommand": "pnpm install",
+  "framework": "nextjs"
 }
